@@ -35,4 +35,10 @@ class check():
                 return 'FAIL'
         except:
             pass
-
+''' example '''
+'''
+if select_ip_version(host,port) == 10:
+    healthcheck(fam=socket.AF_INET6, host,port)
+else:
+    healthcheck(host,port)
+'''
