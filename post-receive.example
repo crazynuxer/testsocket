@@ -1,0 +1,26 @@
+
+#!/bin/sh
+#
+# An example hook script for the "post-receive" event.
+#
+# The "post-receive" script is run after receive-pack has accepted a pack
+
+while read oldrev newrev refname
+do
+    REFNAME=$refname
+    OLDREV=$oldrev
+    NEWREV=$newrev
+done
+
+
+git push git@bitbucket.org:sivento/store-inventory.git $REFNAME
+
+if [ "$REFNAME" = "refs/heads/master" ]; then
+	
+        echo Server server_prod
+        ssh server_prod /bin/bash /home/example/git.sh
+else
+        echo Development
+	ssh server_dev /bin/bash /home/example/development.sh
+fi
+
