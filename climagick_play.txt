@@ -1,0 +1,39 @@
+Cursor Bounce
+
+Cursor will bounce off the walls of your terminal. Try resizing your terminal while its in the middle of the terminal.
+
+x=1;y=1;xd=1;yd=1;while true;do if [[ $x == $LINES || $x == 0 ]]; then xd=$(( $xd *-1 )) ; fi ; if [[ $y == $COLUMNS || $y == 0 ]]; then yd=$(( $yd * -1 )) ; fi ; x=$(( $x + $xd )); y=$(( $y + $yd )); printf "\33[%s;%sH" $x $y; sleep 0.02 ;done
+
+Rainbow Cursor Worm
+
+Cursor leaves a rainbow trail behind it.
+
+a=1;x=1;y=1;xd=1;yd=1;while true;do if [[ $x == $LINES || $x == 0 ]]; then xd=$(( $xd *-1 )) ; fi ; if [[ $y == $COLUMNS || $y == 0 ]]; then yd=$(( $yd * -1 )) ; fi ; x=$(( $x + $xd )); y=$(( $y + $yd )); printf "\33[%s;%sH\33[48;5;%sm \33[0m" $x $y $(($a%199+16)) ;a=$(( $a + 1 )) ; sleep 0.001 ;done
+
+Terminal Screen Saver
+
+Full terminal color gradient effects. The modulus operations keep the colors cycling a bit and makes sure it repeats itself after producing some horizontal lines. Probably could be reworked to be a bit better, this is an exercise left to the hacker.
+
+j=0;a=1;x=1;y=1;xd=1;yd=1;while true;do for i in {1..2000} ; do if [[ $x == $LINES || $x == 0 ]]; then xd=$(( $xd *-1 )) ; fi ; if [[ $y == $COLUMNS || $y == 0 ]]; then yd=$(( $yd * -1 )) ; fi ; x=$(( $x + $xd )); y=$(( $y + $yd )); printf "\33[%s;%sH\33[48;5;%sm . \33[0m" $x $y $(( $a % 8 + 16 + $j % 223 )) ;a=$(( $a + 1 )) ; done ; x=$(( x%$COLUMNS + 1 )) ; j=$(( $j + 8 )) ;done
+
+Rainbow Door
+
+clear;x=$(($COLUMNS/2));y=$(($LINES/2));c=0;n=1;a=90;while :;do bgc=$(($c%232 + 16));case "$a" in 0)xd=0;yd=-1;n=$(($n+1));; 90)xd=1;yd=0;; 180)xd=0;yd=1;n=$(($n+1));; 270)xd=-1;yd=0 ;; *) break ;; esac; for ((i=0;i < $n;i++));do if [[ $x -ge $COLUMNS || $x -le 0 || $y -ge $LINES || $y -le 0 ]]; then x=$(($COLUMNS/2));y=$(($LINES/2));n=1;a=0; continue ; fi ; printf "\033[%s;%sH\033[48;5;%sm \033[0m" $y $x $bgc ; x=$(( $x + $xd )); y=$(( $y + $yd )); done ; c=$(( $c + 1 )); a=$(( $(( $a + 90 )) % 360 )) ; sleep 0.001; done
+
+Matrix Effect
+
+Copy and paste the commands below into your bash shell. Or better yet read, type and learn. Upon running this will create the Matrix effect in your terminal. Make sure you have gawk installed. Standard awk will not work due to buffering problems. Also, you might want to try a different terminal if you're not seeing the bold lead character and non-bold trail. $RANDOM is not really a good random source. If you look closely its using the same character in each column. This is because in quick succession, $RANDOM will generate the same number for a second before moving on to the next.
+
+echo -e "\e[1;40m" ; clear ; while :; do echo $LINES $COLUMNS $(( $RANDOM % $COLUMNS)) $(( $RANDOM % 72 )) ;sleep 0.05; done|gawk '{ letters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()"; c=$4; letter=substr(letters,c,1);a[$3]=0;for (x in a) {o=a[x];a[x]=a[x]+1; printf "\033[%s;%sH\033[2;32m%s",o,x,letter; printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,letter;if (a[x] >= $1) { a[x]=0; } }}'
+
+Instead of manually creating your list of characters, you could also use the jot command to auto generate the available ascii characters for you.
+
+echo -e "\e[1;40m" ; clear ; characters=$( jot -c 94 33 | tr -d '\n' ) ; while :; do echo $LINES $COLUMNS $(( $RANDOM % $COLUMNS)) $(( $RANDOM % 72 )) $characters ;sleep 0.05; done|gawk '{ letters=$5; c=$4; letter=substr(letters,c,1);a[$3]=0;for (x in a) {o=a[x];a[x]=a[x]+1; printf "\033[%s;%sH\033[2;32m%s",o,x,letter; printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,letter;if (a[x] >= $1) { a[x]=0; } }}'
+
+And below is another version that uses characters from Unicode.
+
+echo -e "\e[1;40m" ; clear ; while :; do echo $LINES $COLUMNS $(( $RANDOM % $COLUMNS)) $( printf "\U$(( $RANDOM % 500 ))" ) ;sleep 0.05; done|gawk '{c=$4; letter=$4;a[$3]=0;for (x in a) {o=a[x];a[x]=a[x]+1; printf "\033[%s;%sH\033[2;32m%s",o,x,letter; printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,letter;if (a[x] >= $1) { a[x]=0; } }}'
+
+play -q -n synth sine F2 sine C3 remix - fade 0 4 .1 norm -4 bend 0.5,2477,2 fade 0 4.0 0.5
+
+source: http://climagic.org
